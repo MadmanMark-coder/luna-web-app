@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Luna - Your Romantic AI</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sacramento&family=Montserrat:wght@400;600&display=swap');
+
+    body {
+      background: #ffe6f0;
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #9b2c64;
+      user-select: none;
+      position: relative;
+    }
+
+    h1 {
+      font-family: 'Sacramento', cursive;
+      font-size: 3rem;
+      margin-bottom: 0;
+      color: #c72e6c;
+      text-shadow: 1px 1px 2px #d89ebf;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Your name credit below Luna title */
+    #credit {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      color: #832b5b;
+      margin-top: 4px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      user-select: none;
+      opacity: 0.7;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: #a84378;
+      text-align: center;
+      max-width: 300px;
+      user-select: none;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: floatUp 6s infinite ease-in-out;
+      opacity: 0.8;
+      user-select: none;
+      z-index: 1;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.8;
+      }
+      50% {
+        opacity: 0.4;
+      }
+      100% {
+        transform: translateY(-100px) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 260px;
+      z-index: 10;
+    }
+
+    button {
+      background: linear-gradient(145deg, #f38dbf, #c95a8e);
+      border: none;
+      border-radius: 30px;
+      padding: 15px 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 5px 10px #b54a7d;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    button:active {
+      background: #bd3c78;
+      box-shadow: inset 0 3px 6px #a4386e;
+    }
+    button:focus {
+      outline: none;
+    }
+
+    .mood-switcher {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #9b2c64;
+      user-select: none;
+      z-index: 10;
+    }
+    select#moodSelect {
+      margin-left: 10px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid #c95a8e;
+      background: #fff0f5;
+      color: #c72e6c;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    select#moodSelect:hover {
+      background: #f9d6e3;
+    }
+    select#moodSelect:focus {
+      outline: none;
+      border-color: #b54a7d;
+    }
+
+    #responseText {
+      margin-top: 30px;
+      font-size: 1.3rem;
+      font-style: italic;
+      max-width: 300px;
+      min-height: 50px;
+      color: #832b5b;
+      text-align: center;
+      user-select: text;
+      z-index: 10;
+    }
+
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+      .buttons {
+        width: 100%;
+      }
+      button {
+        font-size: 1rem;
+        padding: 12px 0;
+      }
+      .subtitle {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Luna 💖</h1>
+<div id="credit">Made with 💖 by Mark</div>
+<div class="subtitle">Your romantic AI voice assistant, just for you.</div>
+
+<div class="buttons">
+  <button id="talkBtn">Talk to Me</button>
+  <button id="surpriseBtn">Surprise Me</button>
+  <button id="askBtn">Ask Luna</button>
+</div>
+
+<div class="mood-switcher">
+  Mood:
+  <select id="moodSelect">
+    <option value="gentle" selected>Gentle</option>
+    <option value="flirty">Flirty</option>
+    <option value="playful">Playful</option>
+  </select>
+</div>
+
+<div id="responseText"></div>
+
+<script>
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.top = window.innerHeight + 20 + 'px';
+    heart.textContent = '❤️';
+    heart.style.fontSize = (10 + Math.random() * 20) + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }
+  setInterval(createHeart, 800);
+
+  const API_BASE = '';
+  const responseText = document.getElementById('responseText');
+  const talkBtn = document.getElementById('talkBtn');
+  const surpriseBtn = document.getElementById('surpriseBtn');
+  const askBtn = document.getElementById('askBtn');
+  const moodSelect = document.getElementById('moodSelect');
+
+  function speakText(text) {
+    const synth = window.speechSynthesis;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    utter.rate = 0.9;
+    utter.pitch = 1.1;
+    utter.volume = 1;
+    const femaleVoice = synth.getVoices().find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female'));
+    if (femaleVoice) utter.voice = femaleVoice;
+    synth.speak(utter);
+  }
+
+  surpriseBtn.onclick = async () => {
+    responseText.textContent = 'Luna is thinking... 💭';
+    try {
+      const res = await fetch(API_BASE + '/random');
+      const data = await res.json();
+      responseText.textContent = data.message;
+      speakText(data.message);
+    } catch {
+      responseText.textContent = 'Oops, something went wrong, baby 😞';
+    }
+  };
+
+  askBtn.onclick = async () => {
+    const question = prompt('Ask Luna anything, baby 💕');
+    if (question && question.trim() !== '') {
+      responseText.textContent = 'Luna is thinking... 💭';
+      try {
+        const res = await fetch(API_BASE + '/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: question.trim() }),
+        });
+        const data = await res.json();
+        responseText.textContent = data.reply;
+        speakText(data.reply);
+      } catch {
+        responseText.textContent = 'Oops, something went wrong, baby 😞';
+      }
+    }
+  };
+
+  talkBtn.onclick = async () => {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      responseText.textContent = 'Speech recognition not supported in this browser.';
+      return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognizer = new SpeechRecognition();
+    recognizer.lang = 'en-US';
+    recognizer.interimResults = false;
+    recognizer.maxAlternatives = 1;
+
+    responseText.textContent = 'Luna is listening... 🎧';
+    recognizer.start();
+
+    recognizer.onresult = async (event) => {
+      const speech = event.results[0][0].transcript;
+      responseText.textContent = `You said: "${speech}"`;
+
+      try {
+        const res = await fetch(API_BASE + '/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: speech })
+        });
+        const data = await res.json();
+        responseText.textContent = data.reply;
+        speakText(data.reply);
+      } catch {
+        responseText.textContent = 'Oops, something went wrong, baby 😞';
+      }
+    };
+
+    recognizer.onerror = () => {
+      responseText.textContent = 'Sorry baby, I couldn’t hear you. Try again.';
+    };
+  };
+
+  moodSelect.onchange = () => {
+    const mood = moodSelect.value;
+    fetch(API_BASE + '/set_mood', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mood })
+    })
+    .then(res => res.json())
+    .then(data => {
+      responseText.textContent = `Mood set to: ${data.mood}`;
+    })
+    .catch(() => {
+      responseText.textContent = 'Oops, could not set mood 😞';
+    });
+  };
+</script>
+</body>
+</html>
